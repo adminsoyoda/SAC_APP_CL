@@ -1,6 +1,6 @@
 
-//var syncServer = 'http://192.168.2.41:81/SAC_cl/Sync';
-var syncServer = 'http://186.5.36.149:94/SAC_cl/Sync';
+//var syncServer = 'http://192.168.2.41:81/SAC_CL/Sync';
+var syncServer = 'http://186.5.36.149:94/SAC_CL/Sync';
 
 var PROJECT_ID_GOOGLE = "994360885610";
 var admPass = "sa";
@@ -150,69 +150,69 @@ function SyncExeSendInfo(sqlCommand,table,loader) {
 function SyncApp_Web(TableSelect, TableAction, TableFinAction, ColumType, detailColum,FieldsUpdate,FielsdExist,alerta,loader){
     index=0;
     strAction="";
-	regTable = TableSelect.split("@@");
-	regTableColum = detailColum.split("@@");
-	regTableAction = TableAction.split("@@");
-	regTableFinAction = TableFinAction.split("@@");
-	regColumType = ColumType.split("@@");
-	regFieldsUpdate = FieldsUpdate.split("@@");
-	regFieldExist = FielsdExist.split("@@");  
+    regTable = TableSelect.split("@@");
+    regTableColum = detailColum.split("@@");
+    regTableAction = TableAction.split("@@");
+    regTableFinAction = TableFinAction.split("@@");
+    regColumType = ColumType.split("@@");
+    regFieldsUpdate = FieldsUpdate.split("@@");
+    regFieldExist = FielsdExist.split("@@");  
 
     SyncAppWebExec(alerta,loader);
 }
 
 function SyncAppWebExec(alerta,loader){
     if(index < regTable.length){
-	    BDConsultaOBJ( regTable[index] , function (obj){    
-	        for (var j = 0; j < obj.rows.length; j++) {        
-	            var row = obj.rows.item(j);
+        BDConsultaOBJ( regTable[index] , function (obj){    
+            for (var j = 0; j < obj.rows.length; j++) {        
+                var row = obj.rows.item(j);
 
-	            var actionStr = ((index > 0)? ((j==0)?'|':'') : '')+regTableAction[index] ;
-	            var regColum = regTableColum[index].split("|");
-	            for (var k = 0; k < regColum.length; k++)
-	            {
-	                if (regColumType[index] == "IN"){
-	                    actionStr = actionStr + ((k == 0) ? "'" : ",'") + ((row[regColum[k]]== null) ? '0': row[regColum[k]]) + "'";
-	                }
-	                else{
-	                    actionStr = actionStr + ((k == 0) ? "" : ",") + regColum[k] + "='"+ ((row[regColum[k]]==null) ? '0': row[regColum[k]] )+"'";
-	                }
-	            }
-	            
-	            actionStr = actionStr + regTableFinAction[index] 
-				
-				var regFieldExistItems = regFieldExist[index].split("|");
-	            for (var m = 0; m < regFieldExistItems.length; m++)
-	            {
-	            	if(m==0){
-	            		actionStr = actionStr + regFieldExistItems[m];
-	            	}else{
-	            		actionStr = actionStr + ((m == 1) ? " " : " AND ") +regFieldExistItems[m]+ " ='"+ row[regFieldExistItems[m]] +"'";
-	            	}
-	                
-	            }
-	            var regFieldsUpdateAll= regFieldsUpdate[index].split("$");
-	            var regFieldsUpdateItems = regFieldsUpdateAll[0].split("|");
-	            for (var l = 0; l < regFieldsUpdateItems.length; l++)
-	            {
-	            	if(l==0){
-	            		actionStr = actionStr + regFieldsUpdateItems[l];
-	            	}else{
-	                	actionStr = actionStr + ((l == 1) ? "" : " AND ") +regFieldsUpdateItems[l] + "='"+ row[regFieldsUpdateItems[l]] +"'";
-	            	}
-	            }
+                var actionStr = ((index > 0)? ((j==0)?'|':'') : '')+regTableAction[index] ;
+                var regColum = regTableColum[index].split("|");
+                for (var k = 0; k < regColum.length; k++)
+                {
+                    if (regColumType[index] == "IN"){
+                        actionStr = actionStr + ((k == 0) ? "'" : ",'") + ((row[regColum[k]]== null) ? '0': row[regColum[k]]) + "'";
+                    }
+                    else{
+                        actionStr = actionStr + ((k == 0) ? "" : ",") + regColum[k] + "='"+ ((row[regColum[k]]==null) ? '0': row[regColum[k]] )+"'";
+                    }
+                }
+                
+                actionStr = actionStr + regTableFinAction[index] 
+                
+                var regFieldExistItems = regFieldExist[index].split("|");
+                for (var m = 0; m < regFieldExistItems.length; m++)
+                {
+                    if(m==0){
+                        actionStr = actionStr + regFieldExistItems[m];
+                    }else{
+                        actionStr = actionStr + ((m == 1) ? " " : " AND ") +regFieldExistItems[m]+ " ='"+ row[regFieldExistItems[m]] +"'";
+                    }
+                    
+                }
+                var regFieldsUpdateAll= regFieldsUpdate[index].split("$");
+                var regFieldsUpdateItems = regFieldsUpdateAll[0].split("|");
+                for (var l = 0; l < regFieldsUpdateItems.length; l++)
+                {
+                    if(l==0){
+                        actionStr = actionStr + regFieldsUpdateItems[l];
+                    }else{
+                        actionStr = actionStr + ((l == 1) ? "" : " AND ") +regFieldsUpdateItems[l] + "='"+ row[regFieldsUpdateItems[l]] +"'";
+                    }
+                }
 
-	            actionStr = actionStr + "}" +regFieldsUpdateAll[1]
+                actionStr = actionStr + "}" +regFieldsUpdateAll[1]
 
-	            actionStr = ((j > 0)? '|' : '') + actionStr  ;
-	            strType = strType+ "|"+ regColumType[index];
-	            strAction=strAction+actionStr;
-	        }
-	        index++;
-	        SyncAppWebExec(alerta,loader);
-	    });
-	}else{
-		dataPost={     
+                actionStr = ((j > 0)? '|' : '') + actionStr  ;
+                strType = strType+ "|"+ regColumType[index];
+                strAction=strAction+actionStr;
+            }
+            index++;
+            SyncAppWebExec(alerta,loader);
+        });
+    }else{
+        dataPost={     
             STRACTION : strAction,
             TYPE : strType,
             IDGOOGLE : registerId,
@@ -234,8 +234,8 @@ function SyncAppWebExec(alerta,loader){
             }
 
             if(loader){
-            	alert(regcallbackAll[1]);	
+                alert(regcallbackAll[1]);   
             }
         });
-	}
+    }
 }
